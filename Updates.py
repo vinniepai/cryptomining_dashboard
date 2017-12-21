@@ -105,19 +105,19 @@ BTCprice = str("{:,}".format(float(btc)))
 
 
 if z != 0:
-    Zbal = ("{0:.4f}".format(float(z) * 1000) + " mBTC / " + "{0:.2f}".format(float(exchange_rate(z))) + " CAD - zpool")
+    Zbal = ("{0:.4f}".format(float(z) * 1000) + " mBTC / $" + "{0:.2f}".format(float(exchange_rate(z))) + " CAD - zpool")
 else:
     Zbal = ''
 
 
 if m != 0:
-    MPHbal = ("{0:.4f}".format(float(m) * 1000) + " mBTC / " + "{0:.2f}".format(float(exchange_rate(m))) + " CAD - MiningPoolHub")
+    MPHbal = ("{0:.4f}".format(float(m) * 1000) + " mBTC / $" + "{0:.2f}".format(float(exchange_rate(m))) + " CAD - MiningPoolHub")
 else:
     MPHbal = ''
 
 
 if h != 0:
-    HRbal = ("{0:.4f}".format(float(h) * 1000) + " mBTC / " + "{0:.2f}".format(float(exchange_rate(h))) + " CAD - Hash Refinery")
+    HRbal = ("{0:.4f}".format(float(h) * 1000) + " mBTC / $" + "{0:.2f}".format(float(exchange_rate(h))) + " CAD - Hash Refinery")
 else:
     HRbal = ''
 
