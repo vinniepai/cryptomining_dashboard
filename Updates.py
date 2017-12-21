@@ -7,6 +7,7 @@ config = configparser.ConfigParser()
 config.read("config.ini")
 wallet_id = config.get("wallet","id")
 api_key = config.get("MPH_api_key","key")
+zpool_min = config.get("Payout_Minimums","zpool")
 
 try:
     zpool = config.get("API_URLs","zpool")
@@ -105,19 +106,19 @@ BTCprice = str("{:,}".format(float(btc)))
 
 
 if z != 0:
-    Zbal = ("{0:.4f}".format(float(z) * 1000) + " mBTC / $" + "{0:.2f}".format(float(exchange_rate(z))) + " CAD - zpool")
+    Zbal = ("{0:.4f}".format(float(z) * 1000))
 else:
     Zbal = ''
 
 
 if m != 0:
-    MPHbal = ("{0:.4f}".format(float(m) * 1000) + " mBTC / $" + "{0:.2f}".format(float(exchange_rate(m))) + " CAD - MiningPoolHub")
+    MPHbal = ("{0:.4f}".format(float(m) * 1000))
 else:
     MPHbal = ''
 
 
 if h != 0:
-    HRbal = ("{0:.4f}".format(float(h) * 1000) + " mBTC / $" + "{0:.2f}".format(float(exchange_rate(h))) + " CAD - Hash Refinery")
+    HRbal = ("{0:.4f}".format(float(h) * 1000))
 else:
     HRbal = ''
 
@@ -137,6 +138,6 @@ print('')
 print(colors.BLUE + "Current balance: $" + totalCAD + " CAD / " + totalmBTC + " mBTC" + colors.ENDC)
 print("1 BTC = $" + BTCprice + " CAD")
 print('')
-print(Zbal)
-print(MPHbal)
-print(HRbal)
+print(Zbal + " mBTC / $" + "{0:.2f}".format(float(exchange_rate(z))) + " CAD - zpool" + colors.ENDC + colors.GREEN + " (Minimum payout: " + str(zpool_min) + " mBTC)" + colors.ENDC)
+print(MPHbal + " mBTC / $" + "{0:.2f}".format(float(exchange_rate(m))) + " CAD - MiningPoolHub")
+print(HRbal + " mBTC / $" + "{0:.2f}".format(float(exchange_rate(h))) + " CAD - Hash Refinery")
