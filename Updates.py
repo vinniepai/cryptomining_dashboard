@@ -67,7 +67,7 @@ def mph_bal():
             return m
         except ValueError:
             m = 0
-            err_check("MiningPoolHub")
+            err_check(mph)
             return m
 
 
