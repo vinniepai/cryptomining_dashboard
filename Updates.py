@@ -1,13 +1,17 @@
 import requests
 import configparser
 from decimal import Decimal
+import datetime
 
 error = ""
+history = "log.txt"
 config = configparser.ConfigParser()
 config.read("config.ini")
 wallet_id = config.get("wallet","id")
 api_key = config.get("MPH_api_key","key")
 zpool_min = config.get("Payout_Minimums","zpool")
+mph_min = config.get("Payout_Minimums","mph")
+hr_min = config.get("Payout_Minimums","hr")
 
 try:
     zpool = config.get("API_URLs","zpool")
@@ -49,7 +53,7 @@ def bal(api):
         try:
             p = requests.get(api + wallet_id)
             b = p.text.index('balance')
-            x = p.text[b + 10:b + 20]
+            x = p.text[b + 10:b + 19]
             return x
         except:
             x = 0
@@ -64,7 +68,7 @@ def mph_bal():
         try:
             p = requests.get(mph + api_key)
             b = p.text.index('confirmed')
-            m = p.text[b + 11:b + 21]
+            m = p.text[b + 11:b + 20]
             return m
         except ValueError:
             m = 0
@@ -91,9 +95,21 @@ def err_check(source):
         return error
 
 
-z = bal(zpool)
-h = bal(hr)
-m = mph_bal()
+if zpool == 0:
+    z = 0
+else:
+    z = bal(zpool)
+
+if mph == 0:
+    m = 0
+else:
+    m = mph_bal()
+
+if hr == 0:
+    h = 0
+else:
+    h = bal(hr)
+
 btc = exchange_rate(1)
 results = total_bal()[0]
 total = total_bal()[1]
@@ -133,11 +149,39 @@ class colors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+
+def logging():
+    file = open(history, "r")
+    contents = file.readlines()
+    file.close()
+    last_log_time = contents[0]
+    prev_values = contents[1].split(",")
+    last_log_time = last_log_time.strip()
+    now = datetime.datetime.now()
+    last_log_time.rstrip()
+    then = datetime.datetime.strptime(last_log_time, "%Y-%m-%d %H:%M:%S.%f")
+    print("Time since last query: " + colors.BLUE + str(now - then) + colors.ENDC + "\n")
+    zpool_change = str("{0:.4f}".format(float(Zbal) - float(prev_values[0])))
+    mph_change = str("{0:.4f}".format(float(MPHbal) - float(prev_values[1])))
+    hr_change = str("{0:.4f}".format(float(HRbal) - float(prev_values[2])))
+    print("Change in Zpool balance: " + zpool_change + " mBTC / " + "{0:.2f}".format(float(exchange_rate(zpool_change))) + " CAD")
+    print("Change in MPH balance: " + mph_change + " mBTC / " + "{0:.2f}".format(float(exchange_rate(mph_change))) + " CAD")
+    print("Change in HR balance: " + hr_change + " mBTC / " + "{0:.2f}".format(float(exchange_rate(hr_change))) + " CAD")
+
+    file = open(history, "w")
+    file.write(str(datetime.datetime.now()) + "\n")
+    file.write(str(Zbal) + "," + str(MPHbal) + "," + str(HRbal))
+    file.close()
+
+
+logging()
+
+
 print(colors.RED + error + colors.ENDC)
 print('')
-print(colors.BLUE + "Current balance: $" + totalCAD + " CAD / " + totalmBTC + " mBTC" + colors.ENDC)
+print(colors.BLUE + "Current unpaid balance: $" + totalCAD + " CAD / " + totalmBTC + " mBTC" + colors.ENDC)
 print("1 BTC = $" + BTCprice + " CAD")
 print('')
 print(Zbal + " mBTC / $" + "{0:.2f}".format(float(exchange_rate(z))) + " CAD - zpool" + colors.ENDC + colors.GREEN + " (Minimum payout: " + str(zpool_min) + " mBTC)" + colors.ENDC)
-print(MPHbal + " mBTC / $" + "{0:.2f}".format(float(exchange_rate(m))) + " CAD - MiningPoolHub")
-print(HRbal + " mBTC / $" + "{0:.2f}".format(float(exchange_rate(h))) + " CAD - Hash Refinery")
+print(MPHbal + " mBTC / $" + "{0:.2f}".format(float(exchange_rate(m))) + " CAD - MiningPoolHub" + colors.ENDC + colors.GREEN + " (Minimum payout: " + str(mph_min) + " mBTC)" + colors.ENDC)
+print(HRbal + " mBTC / $" + "{0:.2f}".format(float(exchange_rate(h))) + " CAD - Hash Refinery" + colors.ENDC + colors.GREEN + " (Minimum payout: " + str(hr_min) + " mBTC)" + colors.ENDC)
