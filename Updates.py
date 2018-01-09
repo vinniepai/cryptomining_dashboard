@@ -122,21 +122,21 @@ BTCprice = str("{:,}".format(float(btc)))
 
 
 if z != 0:
-    Zbal = ("{0:.4f}".format(float(z) * 1000))
+    z_mbtc = ("{0:.4f}".format(float(z) * 1000))
 else:
-    Zbal = ''
+    z_mbtc = ''
 
 
 if m != 0:
-    MPHbal = ("{0:.4f}".format(float(m) * 1000))
+    mph_mbtc = ("{0:.4f}".format(float(m) * 1000))
 else:
-    MPHbal = ''
+    mph_mbtc = ''
 
 
 if h != 0:
-    HRbal = ("{0:.4f}".format(float(h) * 1000))
+    hr_mbtc = ("{0:.4f}".format(float(h) * 1000))
 else:
-    HRbal = ''
+    hr_mbtc = ''
 
 
 # Console outputs (not used for Flask output)
@@ -151,26 +151,24 @@ class colors:
 
 
 def logging():
-    file = open(history, "r")
+    file = open(history, "r+")
     contents = file.readlines()
     file.close()
-    last_log_time = contents[0]
+    last_log_time = contents[0].strip()
     prev_values = contents[1].split(",")
-    last_log_time = last_log_time.strip()
     now = datetime.datetime.now()
-    last_log_time.rstrip()
     then = datetime.datetime.strptime(last_log_time, "%Y-%m-%d %H:%M:%S.%f")
     print("Time since last query: " + colors.BLUE + str(now - then) + colors.ENDC + "\n")
-    zpool_change = str("{0:.4f}".format(float(Zbal) - float(prev_values[0])))
-    mph_change = str("{0:.4f}".format(float(MPHbal) - float(prev_values[1])))
-    hr_change = str("{0:.4f}".format(float(HRbal) - float(prev_values[2])))
+    zpool_change = str("{0:.4f}".format(float(z) - float(prev_values[0])))
+    mph_change = str("{0:.4f}".format(float(m) - float(prev_values[1])))
+    hr_change = str("{0:.4f}".format(float(h) - float(prev_values[2])))
     print("Change in Zpool balance: " + zpool_change + " mBTC / " + "{0:.2f}".format(float(exchange_rate(zpool_change))) + " CAD")
     print("Change in MPH balance: " + mph_change + " mBTC / " + "{0:.2f}".format(float(exchange_rate(mph_change))) + " CAD")
     print("Change in HR balance: " + hr_change + " mBTC / " + "{0:.2f}".format(float(exchange_rate(hr_change))) + " CAD")
 
     file = open(history, "w")
     file.write(str(datetime.datetime.now()) + "\n")
-    file.write(str(Zbal) + "," + str(MPHbal) + "," + str(HRbal))
+    file.write(str(z) + "," + str(m) + "," + str(h))
     file.close()
 
 
@@ -182,6 +180,6 @@ print('')
 print(colors.BLUE + "Current unpaid balance: $" + totalCAD + " CAD / " + totalmBTC + " mBTC" + colors.ENDC)
 print("1 BTC = $" + BTCprice + " CAD")
 print('')
-print(Zbal + " mBTC / $" + "{0:.2f}".format(float(exchange_rate(z))) + " CAD - zpool" + colors.ENDC + colors.GREEN + " (Minimum payout: " + str(zpool_min) + " mBTC)" + colors.ENDC)
-print(MPHbal + " mBTC / $" + "{0:.2f}".format(float(exchange_rate(m))) + " CAD - MiningPoolHub" + colors.ENDC + colors.GREEN + " (Minimum payout: " + str(mph_min) + " mBTC)" + colors.ENDC)
-print(HRbal + " mBTC / $" + "{0:.2f}".format(float(exchange_rate(h))) + " CAD - Hash Refinery" + colors.ENDC + colors.GREEN + " (Minimum payout: " + str(hr_min) + " mBTC)" + colors.ENDC)
+print(z_mbtc + " mBTC / $" + "{0:.2f}".format(float(exchange_rate(z))) + " CAD - zpool" + colors.ENDC + colors.GREEN + " (Minimum payout: " + str(zpool_min) + " mBTC)" + colors.ENDC)
+print(mph_mbtc + " mBTC / $" + "{0:.2f}".format(float(exchange_rate(m))) + " CAD - MiningPoolHub" + colors.ENDC + colors.GREEN + " (Minimum payout: " + str(mph_min) + " mBTC)" + colors.ENDC)
+print(hr_mbtc + " mBTC / $" + "{0:.2f}".format(float(exchange_rate(h))) + " CAD - Hash Refinery" + colors.ENDC + colors.GREEN + " (Minimum payout: " + str(hr_min) + " mBTC)" + colors.ENDC)
