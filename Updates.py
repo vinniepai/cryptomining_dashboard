@@ -151,29 +151,31 @@ class colors:
 
 
 def logging():
-    file = open(history, "r+")
-    contents = file.readlines()
-    file.close()
-    last_log_time = contents[0].strip()
-    prev_values = contents[1].split(",")
-    now = datetime.datetime.now()
-    then = datetime.datetime.strptime(last_log_time, "%Y-%m-%d %H:%M:%S.%f")
-    print("Time since last query: " + colors.BLUE + str(now - then) + colors.ENDC + "\n")
-    zpool_change = str("{0:.4f}".format(float(z) - float(prev_values[0])))
-    mph_change = str("{0:.4f}".format(float(m) - float(prev_values[1])))
-    hr_change = str("{0:.4f}".format(float(h) - float(prev_values[2])))
-    print("Change in Zpool balance: " + zpool_change + " mBTC / " + "{0:.2f}".format(float(exchange_rate(zpool_change))) + " CAD")
-    print("Change in MPH balance: " + mph_change + " mBTC / " + "{0:.2f}".format(float(exchange_rate(mph_change))) + " CAD")
-    print("Change in HR balance: " + hr_change + " mBTC / " + "{0:.2f}".format(float(exchange_rate(hr_change))) + " CAD")
-
-    file = open(history, "w")
-    file.write(str(datetime.datetime.now()) + "\n")
-    file.write(str(z) + "," + str(m) + "," + str(h))
-    file.close()
+    try:
+        file = open(history, "r+")
+        contents = file.readlines()
+        file.write(str(datetime.datetime.now()) + "\n")
+        file.write(str(z) + "," + str(m) + "," + str(h) + "\n\n")
+        file.close()
+        last_log_time = contents[0].strip()
+        prev_values = contents[1].split(",")
+        now = datetime.datetime.now()
+        then = datetime.datetime.strptime(last_log_time, "%Y-%m-%d %H:%M:%S.%f")
+        print("Time since last query: " + colors.BLUE + str(now - then) + colors.ENDC + "\n")
+        zpool_change = str("{0:.7f}".format(float(z) - float(prev_values[0])))
+        mph_change = str("{0:.7f}".format(float(m) - float(prev_values[1])))
+        hr_change = str("{0:.7f}".format(float(h) - float(prev_values[2])))
+        print("Change in Zpool balance: " + zpool_change + " mBTC / " + "{0:.2f}".format(float(exchange_rate(zpool_change))) + " CAD")
+        print("Change in MPH balance: " + mph_change + " mBTC / " + "{0:.2f}".format(float(exchange_rate(mph_change))) + " CAD")
+        print("Change in HR balance: " + hr_change + " mBTC / " + "{0:.2f}".format(float(exchange_rate(hr_change))) + " CAD")
+    except FileNotFoundError:
+        file = open(history, "w")
+        file.write(str(datetime.datetime.now()) + "\n")
+        file.write(str(z) + "," + str(m) + "," + str(h) + "\n\n")
+        file.close()
 
 
 logging()
-
 
 print(colors.RED + error + colors.ENDC)
 print('')
