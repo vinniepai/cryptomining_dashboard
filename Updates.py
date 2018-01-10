@@ -154,11 +154,11 @@ def logging():
     try:
         file = open(history, "r+")
         contents = file.readlines()
-        file.write(str(datetime.datetime.now()) + "\n")
-        file.write(str(z) + "," + str(m) + "," + str(h) + "\n\n")
+        file.write("\n\n" + str(datetime.datetime.now()) + "\n")
+        file.write(str(z) + "," + str(m) + "," + str(h))
         file.close()
-        last_log_time = contents[0].strip()
-        prev_values = contents[1].split(",")
+        last_log_time = contents[-2].strip()
+        prev_values = contents[-1].rstrip('\n').split(",")
         now = datetime.datetime.now()
         then = datetime.datetime.strptime(last_log_time, "%Y-%m-%d %H:%M:%S.%f")
         print("Time since last query: " + colors.BLUE + str(now - then) + colors.ENDC + "\n")
@@ -171,8 +171,10 @@ def logging():
     except FileNotFoundError:
         file = open(history, "w")
         file.write(str(datetime.datetime.now()) + "\n")
-        file.write(str(z) + "," + str(m) + "," + str(h) + "\n\n")
+        file.write(str(z) + "," + str(m) + "," + str(h))
         file.close()
+    except IndexError:
+        print("Error in log file - try again.")
 
 
 logging()
