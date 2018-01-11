@@ -12,6 +12,7 @@ api_key = config.get("MPH_api_key","key")
 zpool_min = config.get("Payout_Minimums","zpool")
 mph_min = config.get("Payout_Minimums","mph")
 hr_min = config.get("Payout_Minimums","hr")
+max_log_size = config.get("General", "max_log_size")
 
 try:
     zpool = config.get("API_URLs","zpool")
@@ -139,8 +140,6 @@ else:
     hr_mbtc = ''
 
 
-# Console outputs (not used for Flask output)
-
 class colors:
     GREEN = '\033[92m'
     BLUE = '\033[94m'
@@ -150,6 +149,7 @@ class colors:
     UNDERLINE = '\033[4m'
 
 
+# Tracks previous checks
 def logging():
     try:
         file = open(history, "r+")
@@ -177,7 +177,29 @@ def logging():
         print("Error in log file - try again.")
 
 
+# Limits log file size by deleting the oldest entry once the maximum configured size is reached
+def log_trim():
+    try:
+        file = open(history, "r+")
+        contents = file.readlines()
+        if max_log_size.upper() == "NONE":
+            return
+        elif file.tell() > (1024 * int(max_log_size)):
+            file.close()
+            open(history, "w").writelines(contents[3:])
+            return
+        else:
+            return
+    except FileNotFoundError:
+        return
+    except IndexError:
+        return
+
+
+log_trim()
 logging()
+
+# Console outputs (not used for Flask output)
 
 print(colors.RED + error + colors.ENDC)
 print('')
